@@ -1,0 +1,48 @@
+name: cleric
+
+services:
+  food_app:
+    container_name: cleric-food-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: food_app
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      BROWSER: none
+      CI: "true"
+      WDS_SOCKET_PORT: 3000
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+
+  healer:
+    container_name: cleric-healer
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: healer
+    depends_on:
+      food_app:
+        condition: service_healthy
+    env_file:
+      - ".env"
+    environment:
+      FOOD_APP_URL: http://food_app:3000
+      ARTIFACT_DIR: /workspace/artifacts/workflow-runs
+    volumes:
+      - healer-artifacts:/workspace/artifacts
+    command: ["uv", "run", "python", "-m", "unittest", "discover", "-s", "tests"]
+
+volumes:
+  healer-artifacts:
