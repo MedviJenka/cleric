@@ -1,0 +1,15 @@
+.git
+.idea
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+.env
+artifacts
+food_app/node_modules
+food_app/build
+food_app/.cache
+*.pyc
+*.pyo
+*.log
