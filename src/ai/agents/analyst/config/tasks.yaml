@@ -1,0 +1,29 @@
+observe_failure_task:
+  agent: observer
+  description: >
+    Read this failed automation log and produce an evidence-only state summary:
+    {log}
+  expected_output: >
+    Observed app state, failed step intent, visible controls or errors, and exact evidence. Do not propose a fix.
+
+diagnose_failure_task:
+  agent: diagnostician
+  description: >
+    Classify the failure using the observer evidence. Pick one failure class and explain the root cause.
+  expected_output: >
+    Failure class, root cause, what changed, and uncertainty. Use only the supplied evidence.
+
+propose_repair_task:
+  agent: repair_strategist
+  description: >
+    Propose the smallest deterministic workflow patch that restores the original semantic intent.
+  expected_output: >
+    Patch-ready repair actions, selector or action changes, rationale, and verification condition.
+
+policy_decision_task:
+  agent: risk_policy_analyst
+  description: >
+    Convert the diagnosis and repair into the final MonitoringSchema. Enforce risk policy before allowing auto-apply.
+  expected_output: >
+    A MonitoringSchema JSON object with fix_needed, failure_class, what_changed, what_to_fix, suggested_repair,
+    confidence_level between 0 and 1, risk_level, requires_human_approval, escalation_summary, and evidence.

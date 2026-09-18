@@ -1,0 +1,38 @@
+workflow_id=invoice_approval_web
+run_id=dummy-run-001
+app=QuickBooks Sandbox
+environment=test
+failed_step_id=submit_invoice_for_approval
+failed_step_intent=Submit invoice INV-1042 for approval
+risk=financial_submission
+
+previous_successful_trace:
+  url=https://sandbox.example.test/invoices/INV-1042
+  action=click
+  selector=role=button[name="Submit Invoice"]
+  expected_outcome=invoice status becomes Pending Approval
+
+failure:
+  timestamp=2026-09-18T10:15:30Z
+  error=TimeoutError: locator role=button[name="Submit Invoice"] was not found after 5000ms
+  current_url=https://sandbox.example.test/invoices/INV-1042
+  screenshot=dummy://screenshots/invoice-approval-failed.png
+
+observed_accessibility_tree:
+  heading "Invoice INV-1042"
+  text "Status: Draft"
+  button "More Actions"
+  menuitem "Send for Approval" hidden_until="More Actions clicked"
+  button "Save"
+  button "Cancel"
+
+console:
+  no errors
+
+network:
+  GET /api/invoices/INV-1042 200
+  GET /api/features/invoice-approval 200
+
+operator_note:
+  The approval action appears to have moved from a primary button into the More Actions menu.
+  This action submits financial data, so a human should approve any repair before retrying.
