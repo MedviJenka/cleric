@@ -1,6 +1,7 @@
 import os
 import unittest
 from pathlib import Path
+import pytest
 
 os.environ.setdefault("APP_VERSION", "test")
 os.environ.setdefault("AGENT_VERBOSE", "false")
@@ -38,7 +39,8 @@ class TestAnalystContract(unittest.TestCase):
         self.assertIn("menuitem \"Send for Approval\"", dummy_log)
         self.assertIn("financial data", dummy_log)
 
-    @unittest.skipUnless(os.getenv("RUN_AI_TESTS") == "1", "set RUN_AI_TESTS=1 to run the live CrewAI analyst test")
+    @pytest.mark.ai
+    @pytest.mark.skipif(os.getenv("RUN_AI_TESTS") != "1", reason="set RUN_AI_TESTS=1 to run the live CrewAI analyst test")
     def test_live_ai_analyst_processes_dummy_failure_log(self):
         result = analyst_agent(load_dummy_log())
         schema = MonitoringSchema.model_validate(result)

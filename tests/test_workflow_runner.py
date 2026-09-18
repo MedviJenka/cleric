@@ -4,6 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from pydantic import ValidationError
+import pytest
 
 from src.automation.runner import PlaywrightWorkflowRunner
 from src.automation.workflow import WorkflowDefinition, WorkflowStep
@@ -92,6 +93,19 @@ class TestWorkflowDefinition(unittest.TestCase):
 
         with self.assertRaises(ValidationError):
             WorkflowDefinition.model_validate({"id": "invoice_approval", "steps": [step, step]})
+
+    def test_fill_workflow_steps_require_values(self):
+        with pytest.raises(ValidationError, match="fill workflow steps require a value"):
+            WorkflowStep.model_validate(
+                {
+                    "id": "enter_delivery_address",
+                    "intent": "Enter the delivery address",
+                    "action": "fill",
+                    "target": {"role": "textbox", "name": "Delivery address"},
+                    "risk": "none",
+                    "expected_outcome": "checkout is unlocked",
+                }
+            )
 
 
 class TestPlaywrightWorkflowRunner(unittest.TestCase):
