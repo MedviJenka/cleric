@@ -1,2 +1,7 @@
 .env
-food_app/node_modules
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+food_app/node_modules/
+food_app/build/

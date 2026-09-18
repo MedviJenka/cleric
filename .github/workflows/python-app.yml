@@ -37,8 +37,8 @@ jobs:
       - name: Install Python dependencies
         run: uv sync --frozen --no-install-project
 
-      - name: Run Python tests
-        run: uv run python -m unittest discover -s tests
+      - name: Run Python tests with pytest
+        run: uv run pytest
 
   food-app:
     name: Food app tests and build
